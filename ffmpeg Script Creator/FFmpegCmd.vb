@@ -10,11 +10,12 @@ Public Class FFmpegCmd
     Public ReadOnly Property AudioEncoder As AudioEncoder
     Public ReadOnly Property AdvancedOptions As String
     Public ReadOnly Property SubFile As String
+    Public ReadOnly Property FFmpegParams As String
     Public ReadOnly Property OutputFile As String
 
     Public Sub New(ByVal inputfile As gMKVSegmentInfo, ByVal videoTrack As gMKVTrack, ByVal audioTrack As gMKVTrack, ByVal subtitleTrack As gMKVTrack,
                    Optional videoArgs As Dictionary(Of String, String) = Nothing, Optional audioArgs As Dictionary(Of String, String) = Nothing,
-                   Optional advancedOpts As String = Nothing, Optional subFile As String = Nothing)
+                   Optional advancedOpts As String = Nothing, Optional subFile As String = Nothing, Optional ffparams As String = Nothing)
         Me.InputFile = inputfile.Path
         MapOptions = String.Format("-map 0:{0} -map 0:{1}", videoTrack.TrackID, audioTrack.TrackID)
         If subtitleTrack.CodecID.Contains("PGS") Then
@@ -45,11 +46,13 @@ Public Class FFmpegCmd
             AudioEncoder = New AudioEncoder(False, audioArgs.Item("Encoder"), audioArgs.Item("Bitrate"))
         End If
         AdvancedOptions = IIf(AdvancedOptions = "", advancedOpts, AdvancedOptions + " " + advancedOpts)
-        OutputFile = IO.Path.Combine("..\Convert Cache\", Path.GetFileName(Me.InputFile))
+        FFmpegParams = ffparams
+        OutputFile = Path.Combine("..\Convert Cache\", Path.GetFileName(Me.InputFile))
     End Sub
 
     Public Overrides Function ToString() As String
-        Return String.Format("ffmpeg -i ""{0}"" {1} {2} {3} {4} {5} {6} ""{7}""",
+        Return String.Format("ffmpeg {0} -i ""{1}"" {2} {3} {4} {5} {6} {7} ""{8}""",
+                             FFmpegParams,
                              InputFile,
                              SubFilter,
                              MapOptions,
