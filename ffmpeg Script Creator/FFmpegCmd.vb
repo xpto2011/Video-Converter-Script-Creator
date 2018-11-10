@@ -14,7 +14,7 @@ Public Class FFmpegCmd
     Public ReadOnly Property OutputFile As String
 
     Public Sub New(ByVal inputfile As gMKVSegmentInfo, ByVal videoTrack As gMKVTrack, ByVal audioTrack As gMKVTrack, ByVal subtitleTrack As gMKVTrack,
-                   Optional ByVal optDir As String, Optional videoArgs As Dictionary(Of String, String) = Nothing,
+                   Optional ByVal optDir As String = Nothing, Optional videoArgs As Dictionary(Of String, String) = Nothing,
                    Optional audioArgs As Dictionary(Of String, String) = Nothing, Optional advancedOpts As String = Nothing,
                    Optional subFile As String = Nothing, Optional ffparams As String = Nothing)
         Me.InputFile = inputfile.Path

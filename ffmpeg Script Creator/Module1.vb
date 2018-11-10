@@ -12,7 +12,7 @@ Module Module1
     Private audioSettings As Dictionary(Of String, String)
     Private advancedOpts As String = "-sn"
     Private ffmpegParams As String = ""
-    Private outDir As String = "..\Convert Cache\"
+    Private outDir As String
 
     Private cmdList As New Queue(Of String)
     'ARG(1): Working Dir
@@ -94,7 +94,7 @@ Module Module1
                 subFile = String.Format("sub.{0}", IIf(subtitleTrack.CodecID.Contains("ASS"), "ass", "srt"))
                 cmdList.Enqueue(String.Format("mkvextract tracks ""{0}"" {1}:{2}", f, subtitleTrack.TrackID, subFile))
             End If
-            Dim ffmpeg As New FFmpegCmd(mf.fileInfo, mf.videoTracks.First, audioTrack, subtitleTrack, outDir, videoSettings, audioSettings, advancedOpts, subFile, ffmpegParams)
+            Dim ffmpeg As New FFmpegCmd(mf.fileInfo, mf.videoTracks.First, audioTrack, subtitleTrack, outdir, videoSettings, audioSettings, advancedOpts, subFile, ffmpegParams)
             cmdList.Enqueue(ffmpeg.ToString)
             If requiresExtract = True Then
                 cmdList.Enqueue(String.Format("del {0}", subFile))
