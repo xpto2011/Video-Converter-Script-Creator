@@ -12,6 +12,7 @@ Module Module1
     Private audioSettings As Dictionary(Of String, String)
     Private advancedOpts As String = "-sn"
     Private ffmpegParams As String = ""
+    Private outDir As String
 
     Private cmdList As New Queue(Of String)
     'ARG(1): Working Dir
@@ -69,6 +70,9 @@ Module Module1
         If args.Contains("-ffparams") Then
             ffmpegParams = args(Array.IndexOf(args, "-ffparams") + 1)
         End If
+        If args.Contains("-out") Then
+            outDir = args(Array.IndexOf(args, "-out") + 1)
+        End If
 
         For Each f In My.Computer.FileSystem.GetFiles(args(1), FileIO.SearchOption.SearchTopLevelOnly, "*.mkv")
             Dim mf As New MediaFile(f)
@@ -84,13 +88,13 @@ Module Module1
             Else
                 audioTrack = mf.GetAudioToKeep(False, audioSettings.Item("AudioSelection").Split(":")(0), audioSettings.Item("AudioSelection").Split(":")(1))
             End If
-            Dim subFile As String
+            Dim subFile As String = Nothing
             Dim requiresExtract As Boolean = MediaFile.SubRequiresExtract(subtitleTrack)
             If requiresExtract = True Then
                 subFile = String.Format("sub.{0}", IIf(subtitleTrack.CodecID.Contains("ASS"), "ass", "srt"))
                 cmdList.Enqueue(String.Format("mkvextract tracks ""{0}"" {1}:{2}", f, subtitleTrack.TrackID, subFile))
             End If
-            Dim ffmpeg As New FFmpegCmd(mf.fileInfo, mf.videoTracks.First, audioTrack, subtitleTrack, videoSettings, audioSettings, advancedOpts, subFile, ffmpegParams)
+            Dim ffmpeg As New FFmpegCmd(mf.fileInfo, mf.videoTracks.First, audioTrack, subtitleTrack, outdir, videoSettings, audioSettings, advancedOpts, subFile, ffmpegParams)
             cmdList.Enqueue(ffmpeg.ToString)
             If requiresExtract = True Then
                 cmdList.Enqueue(String.Format("del {0}", subFile))
