@@ -14,7 +14,7 @@ Public Class FFmpegCmd
     Public ReadOnly Property OutputFile As String
 
     Public Sub New(ByVal inputfile As gMKVSegmentInfo, ByVal videoTrack As gMKVTrack, ByVal audioTrack As gMKVTrack, ByVal subtitleTrack As gMKVTrack,
-                   Optional ByVal optDir As String = Nothing, Optional videoArgs As Dictionary(Of String, String) = Nothing,
+                   ByVal optDir As String, Optional videoArgs As Dictionary(Of String, String) = Nothing,
                    Optional audioArgs As Dictionary(Of String, String) = Nothing, Optional advancedOpts As String = Nothing,
                    Optional subFile As String = Nothing, Optional ffparams As String = Nothing)
         Me.InputFile = inputfile.Path
@@ -48,7 +48,7 @@ Public Class FFmpegCmd
         End If
         AdvancedOptions = IIf(AdvancedOptions = "", advancedOpts, AdvancedOptions + " " + advancedOpts)
         FFmpegParams = ffparams
-        OutputFile = IIf(optDir Is Nothing, Path.Combine("..\Convert Cache\", Path.GetFileName(Me.InputFile)), Path.Combine(optDir, Path.GetFileName(Me.InputFile)))
+        OutputFile = Path.Combine(optDir, Path.GetFileName(Me.InputFile))
     End Sub
 
     Public Overrides Function ToString() As String
