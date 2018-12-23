@@ -19,7 +19,7 @@ Public Class FFmpegCmd
                    Optional subFile As String = Nothing, Optional ffparams As String = Nothing)
         Me.InputFile = inputfile.Path
         MapOptions = String.Format("-map 0:{0} -map 0:{1}", videoTrack.TrackID, audioTrack.TrackID)
-        If subtitleTrack.CodecID.Contains("PGS") Then
+        If MediaFile.SubRequiresExtract(subtitleTrack) = False Then
             SubFilter = String.Format("-filter_complex ""[0:v][0:{0}]overlay""", subtitleTrack.TrackID)
             AdvancedOptions = "-t " & MediaFile.GetVideoDuration(inputfile)
         Else
@@ -31,11 +31,11 @@ Public Class FFmpegCmd
             VideoEncoder = New VideoEncoder(True)
         ElseIf videoArgs.Item("Encoder").Contains("nvenc") Then
             VideoEncoder = New VideoEncoder(False, videoArgs.Item("Encoder"), videoArgs.Item("Preset"),
-                                            videoArgs.Item("PixelFormat"), videoArgs.Item("VideoQMax"),
-                                            videoArgs.Item("VideoQMin"))
+                                            videoArgs.Item("PixelFormat"), videoArgs.Item("VideoCRF"),
+                                            videoArgs.Item("VideoQMax"))
         Else
             VideoEncoder = New VideoEncoder(False, videoArgs.Item("Encoder"), videoArgs.Item("Preset"),
-                                videoArgs.Item("PixelFormat"), videoArgs.Item("VideoQMax"))
+                                videoArgs.Item("PixelFormat"), videoArgs.Item("VideoCRF"))
         End If
         If audioArgs Is Nothing Then
             AudioEncoder = New AudioEncoder(True)
@@ -73,7 +73,7 @@ Public Class VideoEncoder
     Public ReadOnly Property videoQualityParams As String
 
     Public Sub New(IsCopy As Boolean, Optional videoEncoder As String = Nothing, Optional videoPreset As String = Nothing,
-                   Optional pixelFormat As String = "yuv420p", Optional videoQualityMax As Integer = Nothing, Optional videoQualityMin As Integer = Nothing)
+                   Optional pixelFormat As String = "yuv420p", Optional CRF As Integer = Nothing, Optional videoQualityMax As Integer = Nothing)
         If IsCopy = True Then
             Me.IsCopy = True
         Else
@@ -85,9 +85,9 @@ Public Class VideoEncoder
                 Me.pixelFormat = pixelFormat
             End If
             If videoEncoder.Contains("nvenc") Then
-                videoQualityParams = String.Format("-rc vbr_hq -qmin:v {0} -qmax:v {1}", videoQualityMin, videoQualityMax)
+                videoQualityParams = String.Format("-rc vbr_hq -qmin:v {0} -qmax:v {1}", CRF, videoQualityMax)
             Else
-                videoQualityParams = String.Format("-crf {0}", videoQualityMax)
+                videoQualityParams = String.Format("-crf {0}", CRF)
             End If
         End If
     End Sub

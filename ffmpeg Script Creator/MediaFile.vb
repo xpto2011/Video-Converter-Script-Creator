@@ -17,7 +17,7 @@ Public Class MediaFile
             If TryCast(seg, gMKVSegmentInfo) IsNot Nothing Then
                 Console.WriteLine(CType(seg, gMKVSegmentInfo).Path)
             Else
-                Console.WriteLine(seg.ToString)
+                'Console.WriteLine(seg.ToString)
             End If
             If TryCast(seg, gMKVSegmentInfo) IsNot Nothing Then
                 fileInfo = seg

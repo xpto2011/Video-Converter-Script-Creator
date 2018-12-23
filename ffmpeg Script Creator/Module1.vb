@@ -21,7 +21,7 @@ Module Module1
     '           MKVToolNix Path to be set (above)
 
     'Example
-    '"%WorkingDir%" -v "videoencoder(or_copy);preset;pixel_format(opt);crf(max);vbr_min(opt)" 
+    '"%WorkingDir%" -v "videoencoder(or_copy);preset;pixel_format(opt);crf(min);vbr_max(opt)" 
     '               -a "language:order(opt);audioencoder(or_copy);160(bitrate);audiochannels(opt)" 
     '               -s "language:order" 
     '               -adv "-sn -profile:v high"
@@ -46,8 +46,8 @@ Module Module1
             If s(0) <> "copy" Then
                 videoSettings.Add("Preset", s(1))
                 If s(2) <> "" Then videoSettings.Add("PixelFormat", s(2)) Else videoSettings.Add("PixelFormat", "yuv420p")
-                videoSettings.Add("VideoQMax", s(3))
-                If s(0).Contains("nvenc") Then videoSettings.Add("VideoQMin", s(4))
+                videoSettings.Add("VideoCRF", s(3))
+                If s(0).Contains("nvenc") Then videoSettings.Add("VideoQMax", s(4))
             End If
         End If
         If args.Contains("-a") Then
@@ -75,19 +75,23 @@ Module Module1
         End If
 
         For Each f In My.Computer.FileSystem.GetFiles(args(1), FileIO.SearchOption.SearchTopLevelOnly, "*.mkv")
+            Console.WriteLine("=======================================")
+
             Dim mf As New MediaFile(f)
-            Dim subtitleTrack As gMKVTrack
             Dim audioTrack As gMKVTrack
-            If subtitlesSettings Is Nothing Then
-                subtitleTrack = mf.GetSubToExtract
-            Else
-                subtitleTrack = mf.GetSubToExtract(False, subtitlesSettings.Split(":")(0), subtitlesSettings.Split(":")(1))
-            End If
+            Dim subtitleTrack As gMKVTrack
             If audioSettings Is Nothing OrElse audioSettings.ContainsKey("AudioSelection") = False Then
                 audioTrack = mf.GetAudioToKeep
             Else
                 audioTrack = mf.GetAudioToKeep(False, audioSettings.Item("AudioSelection").Split(":")(0), audioSettings.Item("AudioSelection").Split(":")(1))
             End If
+            writeSelTrackDetails(audioTrack)
+            If subtitlesSettings Is Nothing Then
+                subtitleTrack = mf.GetSubToExtract
+            Else
+                subtitleTrack = mf.GetSubToExtract(False, subtitlesSettings.Split(":")(0), subtitlesSettings.Split(":")(1))
+            End If
+            writeSelTrackDetails(subtitleTrack)
             Dim subFile As String = Nothing
             Dim requiresExtract As Boolean = MediaFile.SubRequiresExtract(subtitleTrack)
             If requiresExtract = True Then
@@ -109,5 +113,9 @@ Module Module1
         sb.AppendLine("pause")
         File.WriteAllText("Converter.bat", sb.ToString())
         Console.ReadLine()
+    End Sub
+
+    Private Sub writeSelTrackDetails(track As gMKVSegment)
+        Console.WriteLine(track.ToString)
     End Sub
 End Module
