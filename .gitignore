@@ -259,3 +259,5 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/ffmpeg Script Creator/Resources/Newtonsoft.Json.dll
+/ffmpeg Script Creator/Resources/gMKVToolNix.dll

@@ -70,6 +70,20 @@ Public Class MediaFile
         Return Nothing
     End Function
 
+    Public Function WriteAllTracks() As String
+        Dim s As String = ""
+        For Each track In videoTracks
+            s += track.ToString + vbNewLine
+        Next
+        For Each track In audioTracks
+            s += track.ToString + vbNewLine
+        Next
+        For Each track In subtitleTracks
+            s += track.ToString + vbNewLine
+        Next
+        Return s
+    End Function
+
     Public Shared Function SubRequiresExtract(Subtitle As gMKVTrack) As String
         If Subtitle.CodecID.Contains("ASS") Or Subtitle.CodecID.Contains("UTF8") Then
             Return True

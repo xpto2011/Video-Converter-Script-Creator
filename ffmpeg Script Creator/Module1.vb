@@ -1,7 +1,7 @@
 ﻿Imports System.IO
 Imports gMKVToolNix
 
-Module Module1
+Public Module Module1
 
     Friend Const MKVTN_PATH = "C:\Program Files\MKVToolNix"
 
@@ -26,9 +26,15 @@ Module Module1
     '               -s "language:order" 
     '               -adv "-sn -profile:v high"
     '               -ffparams "-hwaccel cuvid -y"
+    '               -out "output dir"
 
     Sub Main()
-        args = Environment.GetCommandLineArgs
+        ProcessFiles(Environment.GetCommandLineArgs, False)
+    End Sub
+
+    Public Function ProcessFiles(cmdargs As String(), verify As Boolean) As String
+        args = cmdargs
+
         Directory.SetCurrentDirectory(args(1))
 
         Console.WriteLine(args(1))
@@ -54,7 +60,7 @@ Module Module1
             Dim i = Array.IndexOf(args, "-a")
             Dim s As String() = args(i + 1).Split(";")
             audioSettings = New Dictionary(Of String, String)
-            If s(0) <> Nothing Then
+            If s(0) <> "" Then
                 audioSettings.Add("AudioSelection", s(0))
             End If
             audioSettings.Add("Encoder", s(1))
@@ -111,9 +117,14 @@ Module Module1
             sb.AppendLine(l)
         Next
         sb.AppendLine("pause")
-        File.WriteAllText("Converter.bat", sb.ToString())
-        Console.ReadLine()
-    End Sub
+
+        If verify = False Then
+            File.WriteAllText("Converter.bat", sb.ToString())
+            Return sb.ToString
+        Else
+            Return sb.ToString
+        End If
+    End Function
 
     Private Sub writeSelTrackDetails(track As gMKVSegment)
         Console.WriteLine(track.ToString)
