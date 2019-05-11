@@ -25,7 +25,7 @@
         list.Add("" & vEncoder.Text & ";" & vPreset.Text & ";" & vPFormat.Text & ";" & vCRF.Text & IIf(vQMax.Text.Length > 0, ";" & vQMax.Text, "") & "")
 
         list.Add("-a")
-        list.Add("" & IIf(ASL.Text.Length > 0 And ASO.Text.Length > 0, ASL.Text & ":" & ASO.Text, "") & ";" & aEncoder.Text & ";" & aBitrate.Text & ";" & aCha.Text & "")
+        list.Add("" & IIf(ASL.Text.Length > 0 And ASO.Text.Length > 0, ASL.Text & ":" & ASO.Text, "") & ";" & aEncoder.Text & ";" & aBitrate.Text & IIf(aCha.Text.Length > 0, ";" & aCha.Text, "") & "")
 
         If SSL.Text.Length > 0 And SSO.Text.Length > 0 Then
             list.Add("-s")

@@ -5,8 +5,6 @@ Public Module Module1
 
     Friend Const MKVTN_PATH = "C:\Program Files\MKVToolNix"
 
-    Private args As String()
-
     Private subtitlesSettings As String
     Private videoSettings As Dictionary(Of String, String)
     Private audioSettings As Dictionary(Of String, String)
@@ -14,7 +12,6 @@ Public Module Module1
     Private ffmpegParams As String = ""
     Private outDir As String = "..\Convert Cache\"
 
-    Private cmdList As New Queue(Of String)
     'ARG(1): Working Dir
 
     'Requires:  gMKVToolNix.dll in the same folder as the executable
@@ -32,8 +29,9 @@ Public Module Module1
         ProcessFiles(Environment.GetCommandLineArgs, False)
     End Sub
 
-    Public Function ProcessFiles(cmdargs As String(), verify As Boolean) As String
-        args = cmdargs
+    Public Function ProcessFiles(args As String(), verify As Boolean) As String
+        'args = cmdargs
+        Dim cmdList As New Queue(Of String)
 
         Directory.SetCurrentDirectory(args(1))
 
