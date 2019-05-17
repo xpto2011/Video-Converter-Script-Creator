@@ -63,7 +63,7 @@ Public Module Module1
             End If
             audioSettings.Add("Encoder", s(1))
             If s(1) <> "copy" Then
-                If s(2) <> "" Then audioSettings.Add("Bitrate", s(2)) Else audioSettings.Add("Bitrate", "192")
+                If s(2) <> "" Then audioSettings.Add("Bitrate", s(2))
                 If s.Length = 4 Then audioSettings.Add("Channels", s(3))
             End If
         End If

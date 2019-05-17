@@ -42,7 +42,11 @@ Public Class FFmpegCmd
         ElseIf audioArgs.Item("Encoder") = "copy" Then
             AudioEncoder = New AudioEncoder(True)
         ElseIf audioArgs.ContainsKey("Channels") Then
-            AudioEncoder = New AudioEncoder(False, audioArgs.Item("Encoder"), audioArgs.Item("Bitrate"), audioArgs.Item("Channels"))
+            If audioArgs.ContainsKey("Bitrate") Then
+                AudioEncoder = New AudioEncoder(False, audioArgs.Item("Encoder"), audioArgs.Item("Bitrate"), audioArgs.Item("Channels"))
+            Else
+                AudioEncoder = New AudioEncoder(False, audioArgs.Item("Encoder"), Nothing, audioArgs.Item("Channels"))
+            End If
         Else
             AudioEncoder = New AudioEncoder(False, audioArgs.Item("Encoder"), audioArgs.Item("Bitrate"))
         End If
@@ -123,9 +127,9 @@ Public Class AudioEncoder
 
     Public Overrides Function ToString() As String
         If IsCopy = False Then
-            Return String.Format("-c:a {0} -b:a {1}K {2}",
+            Return String.Format("-c:a {0} {1} {2}",
                             audioEncoder,
-                            audioBitrate,
+                            IIf(audioBitrate = Nothing, "", "-b:a " & audioBitrate & "K"),
                             IIf(audioChannels = 0, "", "-ac " & audioChannels))
         Else
             Return "-c:a copy"
